@@ -5,11 +5,15 @@ Autor: Sistema Automatizado
 Fecha: 2026
 """
 
+
+
 import pyodbc
 import time
 import logging
 import sys
 from typing import Tuple, List
+import colorama
+from colorama import Fore, Style
 
 # Importar configuraciones y catálogos
 from config import DB_CONFIG, LOG_CONFIG, EXEC_CONFIG
