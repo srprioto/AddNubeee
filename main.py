@@ -5,7 +5,7 @@ Autor: Sistema Automatizado
 Fecha: 2026
 """
 
-import pyodbc
+# import pyodbc
 import time
 import logging
 from typing import Dict, Tuple
