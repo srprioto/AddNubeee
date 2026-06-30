@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Script principal para ejecutar SP_CargarFuncionAMatriz con múltiples indicadores
+Script principal con selector de modo interactivo y logs de consola detallados
 Autor: Sistema Automatizado
 Fecha: 2026
 """
@@ -8,14 +8,15 @@ Fecha: 2026
 import pyodbc
 import time
 import logging
-from typing import Dict, Tuple
+import sys
+from typing import Tuple, List
 
-# Importar configuración y datos
+# Importar configuraciones y catálogos
 from config import DB_CONFIG, LOG_CONFIG, EXEC_CONFIG
-from indicadores import INDICADORES
+from indicadores import INDICADORESSOLO, INDICADORESMULTIPLE
 
 # ====================================================================================
-# CONFIGURACIÓN DE LOGGING
+# CONFIGURACIÓN DE LOGGING (Hacia archivo o consola de fondo)
 # ====================================================================================
 logging.basicConfig(
     level=getattr(logging, LOG_CONFIG['level']),
@@ -25,10 +26,70 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ====================================================================================
-# FUNCIÓN PARA OBTENER CONEXIÓN
+# CONTROL DE TECLADO MULTIPLATAFORMA (Windows / Linux / Mac)
+# ====================================================================================
+try:
+    import msvcrt
+    def get_key():
+        ch = msvcrt.getch()
+        if ch in (b'\x00', b'\xe0'):
+            return msvcrt.getch()
+        return ch
+    KEY_UP = b'H'
+    KEY_DOWN = b'P'
+    KEY_ENTER = b'\r'
+except ImportError:
+    import tty
+    import termios
+    def get_key():
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+            if ch == '\x1b':
+                return sys.stdin.read(2)
+            return ch.encode()
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    KEY_UP = '[A'
+    KEY_DOWN = '[B'
+    KEY_ENTER = b'\n'
+
+# ====================================================================================
+# INTERFAZ DE CONSOLA (MENÚ INTERACTIVO)
+# ====================================================================================
+def seleccionar_modo() -> str:
+    opciones = ["Solo", "Multiple"]
+    seleccionado = 0
+    
+    while True:
+        print("\033[H\033[J", end="")  # Limpia la pantalla
+        print("==============================================")
+        print("  SELECCIONE EL MODO DE EJECUCIÓN (Flechas)   ")
+        print("==============================================")
+        for i, opcion in enumerate(opciones):
+            if i == seleccionado:
+                print(f" > \033[1;32m[{opcion.upper()}]\033[0m <")
+            else:
+                print(f"   {opcion}")
+        print("==============================================")
+        print("Usa las ↑/↓ y ENTER para confirmar.")
+
+        key = get_key()
+        if key == KEY_UP:
+            seleccionado = (seleccionado - 1) % len(opciones)
+        elif key == KEY_DOWN:
+            seleccionado = (seleccionado + 1) % len(opciones)
+        elif key == KEY_ENTER or key == b' ':
+            break
+            
+    return opciones[seleccionado].lower()
+
+# ====================================================================================
+# CONEXIÓN A BASE DE DATOS
 # ====================================================================================
 def get_connection():
-    """Establece conexión con SQL Server"""
     try:
         conn_str = (
             f"DRIVER={DB_CONFIG['driver']};"
@@ -38,200 +99,114 @@ def get_connection():
             f"PWD={DB_CONFIG['password']};"
             f"TrustServerCertificate=yes;"
         )
-        conn = pyodbc.connect(conn_str)
-        logger.info("✅ Conexión exitosa a la base de datos")
-        return conn
+        return pyodbc.connect(conn_str)
     except Exception as e:
-        logger.error(f"❌ Error de conexión: {str(e)}")
+        print(f"\n\033[1;31m- ERROR DE CONEXIÓN -\033[0m No se pudo conectar a SQL Server: {str(e)}")
         raise
 
 # ====================================================================================
-# FUNCIÓN PARA EJECUTAR EL SP
+# PROCEDIMIENTOS DE EJECUCIÓN SQL
 # ====================================================================================
-def ejecutar_sp(conn, nombre_columna: str, funcion_sql: str) -> Tuple[bool, str]:
-    """
-    Ejecuta el SP_CargarFuncionAMatriz para un indicador específico
-    
-    Args:
-        conn: Conexión a la base de datos
-        nombre_columna: Nombre de la columna (ej: 'NDQ29')
-        funcion_sql: Función SQL a ejecutar
-    
-    Returns:
-        Tuple[bool, str]: (éxito, mensaje)
-    """
+def ejecutar_sp_solo(conn, nombre_columna: str, funcion_sql: str) -> Tuple[bool, str]:
     try:
         cursor = conn.cursor()
-        
-        # Construir el comando EXEC
-        sql = f"""
-        EXEC dbo.SP_CargarFuncionAMatriz 
-            @NombreColumna = ?,
-            @FuncionSQL = ?
-        """
-        
-        logger.debug(f"🔄 Ejecutando: {nombre_columna} = {funcion_sql}")
-        
-        # Ejecutar el SP
+        sql = "EXEC dbo.SP_CargarFuncionAMatriz @NombreColumna = ?, @FuncionSQL = ?"
         cursor.execute(sql, (nombre_columna, funcion_sql))
         cursor.commit()
-        
-        mensaje = f"✅ {nombre_columna} - SUCCESS: Función ejecutada correctamente"
-        logger.info(mensaje)
-        
-        return True, mensaje
-        
-    except pyodbc.Error as e:
-        # Error específico de ODBC
-        error_msg = f"❌ {nombre_columna} - ERROR DB: {str(e)}"
-        logger.error(error_msg)
-        return False, error_msg
-        
+        return True, "SUCCESS"
     except Exception as e:
-        # Cualquier otro error
-        error_msg = f"❌ {nombre_columna} - ERROR: {str(e)}"
-        logger.error(error_msg)
-        return False, error_msg
+        return False, str(e)
 
-# ====================================================================================
-# FUNCIÓN PARA VALIDAR QUE LA FUNCIÓN EXISTA (OPCIONAL)
-# ====================================================================================
-def validar_funcion(conn, funcion_sql: str) -> bool:
-    """
-    Valida que la función exista en la base de datos
-    """
-    if not EXEC_CONFIG['validate_functions']:
-        return True
-    
+def ejecutar_sp_multiple(conn, mapeo_columnas: str, funcion_sql: str) -> Tuple[bool, str]:
     try:
-        # Extraer el nombre de la función (antes del paréntesis)
-        nombre_funcion = funcion_sql.split('(')[0].strip()
-        
         cursor = conn.cursor()
-        sql = f"""
-        SELECT COUNT(*) 
-        FROM sys.objects 
-        WHERE type IN ('FN', 'IF', 'TF', 'FS', 'FT') 
-        AND name = '{nombre_funcion}'
-        """
-        
-        cursor.execute(sql)
-        count = cursor.fetchone()[0]
-        
-        if count > 0:
-            return True
-        else:
-            logger.warning(f"⚠️ La función '{nombre_funcion}' no existe en la base de datos")
-            return False
-            
+        # pyodbc traduce strings de Python a NVARCHAR de forma automática y segura
+        sql = "EXEC dbo.SP_CargarFuncionAMatriz_Multi @MapeoColumnas = ?, @FuncionSQL = ?"
+        cursor.execute(sql, (mapeo_columnas, funcion_sql))
+        cursor.commit()
+        return True, "SUCCESS"
     except Exception as e:
-        logger.warning(f"⚠️ No se pudo validar la función: {str(e)}")
-        return True  # Continuamos aunque no se pueda validar
+        return False, str(e)
 
 # ====================================================================================
-# FUNCIÓN PRINCIPAL
+# FLUJO PRINCIPAL
 # ====================================================================================
 def main():
-    """Función principal que ejecuta todos los indicadores"""
+    modo = seleccionar_modo()
     
-    logger.info("=" * 80)
-    logger.info("🚀 INICIANDO PROCESO DE CARGA DE INDICADORES")
-    logger.info("=" * 80)
-    logger.info(f"📋 Total de indicadores a procesar: {len(INDICADORES)}")
-    logger.info("=" * 80)
-    
-    # Estadísticas
-    total = len(INDICADORES)
-    exitosos = 0
-    fallidos = 0
-    resultados = []
-    
-    # Conectar a la base de datos
-    conn = None
+    # Asignar la lista correspondiente según el modo elegido
+    if modo == "solo":
+        lista_indicadores = INDICADORESSOLO
+        nombre_sp = "dbo.SP_CargarFuncionAMatriz"
+    else:
+        lista_indicadores = INDICADORESMULTIPLE
+        nombre_sp = "dbo.SP_CargarFuncionAMatriz_Multi"
+
+    print("\033[H\033[J", end="")
+    print("=" * 80)
+    print(f" INICIANDO PROCESO EN MODO: {modo.upper()}")
+    print(f" SP Destino: {nombre_sp}")
+    print(f" Total de registros a procesar: {len(lista_indicadores)}")
+    print("=" * 80 + "\n")
+
+    if not lista_indicadores:
+        print("\033[1;33m La lista de indicadores seleccionada está vacía.\033[0m")
+        return
+
     try:
         conn = get_connection()
-    except Exception as e:
-        logger.error(f"❌ No se pudo establecer conexión: {str(e)}")
+    except Exception:
         return
-    
+
+    total = len(lista_indicadores)
+    exitosos = 0
+    fallidos = 0
+
     try:
-        # Procesar cada indicador
-        for idx, (nombre_columna, funcion_sql) in enumerate(INDICADORES, 1):
-            logger.info("-" * 80)
-            logger.info(f"📌 Procesando [{idx}/{total}]: {nombre_columna}")
+        for idx, (param_1, funcion_sql) in enumerate(lista_indicadores, 1):
+            # Identificador visual corto para la consola
+            info_visual = param_1 if modo == "solo" else (param_1[:40] + "...")
             
-            # Validar función (opcional)
-            if EXEC_CONFIG['validate_functions']:
-                if not validar_funcion(conn, funcion_sql):
-                    logger.warning(f"⚠️ Saltando {nombre_columna} - Función no válida")
-                    fallidos += 1
-                    resultados.append(f"❌ {nombre_columna} - Función no existe")
-                    continue
+            # 1. Mostrar que el registro está cargando (sin salto de línea)
+            print(f"[{idx}/{total}] Ejecutando para: {info_visual} -> \033[1;33mCargando...\033[0m", end="", flush=True)
             
-            # Ejecutar el SP
-            exito, mensaje = ejecutar_sp(conn, nombre_columna, funcion_sql)
+            # Ejecución del procedimiento según el modo
+            if modo == "solo":
+                exito, mensaje = ejecutar_sp_solo(conn, param_1, funcion_sql)
+            else:
+                # Normalizar formato JSON envolviendo con llaves {} si el catálogo no las trae escritas
+                json_mapeo = f"{{{param_1}}}" if not (param_1.startswith('{') and param_1.endswith('}')) else param_1
+                exito, mensaje = ejecutar_sp_multiple(conn, json_mapeo, funcion_sql)
             
-            # Registrar resultado
+            # 2. Borrar el "Cargando..." de la línea actual y poner el resultado definitivo
+            # Usamos '\r' para regresar al inicio de la línea e imprimir el estado real
             if exito:
                 exitosos += 1
-                resultados.append(f"✅ {nombre_columna}")
+                print(f"\r[{idx}/{total}] Ejecutando para: {info_visual} -> \033[1;32mSUCCESS\033[0m")
             else:
                 fallidos += 1
-                resultados.append(f"❌ {nombre_columna} - {mensaje}")
-            
-            # Pequeña pausa entre ejecuciones para no saturar
+                print(f"\r[{idx}/{total}] Ejecutando para: {info_visual} -> \033[1;31mERROR\033[0m ({mensaje})")
+
+            # Pausa opcional configurada
             if EXEC_CONFIG['pause_seconds'] > 0:
                 time.sleep(EXEC_CONFIG['pause_seconds'])
-            
-            # Mostrar progreso en consola
-            if EXEC_CONFIG['show_progress']:
-                print(f"📊 Progreso: {idx}/{total} - {nombre_columna} - {'✅ ÉXITO' if exito else '❌ FALLÓ'}")
-        
+
     except KeyboardInterrupt:
-        logger.warning("⚠️ Proceso interrumpido por el usuario")
-        
-    except Exception as e:
-        logger.error(f"❌ Error inesperado en el proceso: {str(e)}")
-        
+        print("\n\n\033[1;33m!! Proceso interrumpido voluntariamente por el usuario.\033[0m")
     finally:
-        # Cerrar conexión
         if conn:
             conn.close()
-            logger.info("🔒 Conexión cerrada")
-    
-    # ====================================================================================
-    # REPORTE FINAL
-    # ====================================================================================
-    logger.info("=" * 80)
-    logger.info("📊 REPORTE FINAL DE EJECUCIÓN")
-    logger.info("=" * 80)
-    logger.info(f"✅ Éxitos:  {exitosos}/{total}")
-    logger.info(f"❌ Fallidos: {fallidos}/{total}")
-    logger.info("=" * 80)
-    
-    # Mostrar detalles de los fallidos
-    if fallidos > 0:
-        logger.info("📋 Detalles de fallos:")
-        for resultado in resultados:
-            if resultado.startswith("❌"):
-                logger.info(f"   {resultado}")
-    
-    logger.info("🏁 PROCESO FINALIZADO")
-    logger.info("=" * 80)
-    
-    # Mostrar resumen en consola simple
-    print("\n" + "=" * 60)
-    print(f"📊 RESUMEN FINAL")
-    print(f"   ✅ Exitosos: {exitosos}/{total}")
-    print(f"   ❌ Fallidos: {fallidos}/{total}")
-    print("=" * 60)
 
-# ====================================================================================
-# PUNTO DE ENTRADA
-# ====================================================================================
+    # ====================================================================================
+    # REPORTE FINAL EN CONSOLA
+    # ====================================================================================
+    print("\n" + "=" * 60)
+    print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
+    print("=" * 60)
+    print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
+    print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
+    print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
+    print("=" * 60 + "\n")
+
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        logger.error(f"❌ Error fatal: {str(e)}")
-        print(f"\n❌ ERROR FATAL: {str(e)}")
+    main()

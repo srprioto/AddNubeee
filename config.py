@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Configuración de conexión a la base de datos
+Configuración de conexión a la base de datos y ejecución
 Autor: Sistema Automatizado
 Fecha: 2026
 """
@@ -14,7 +14,7 @@ DB_CONFIG = {
     'database': 'nubeee',
     'username': 'sa',
     'password': 'Clave-Sql-2026',
-    'driver': '{ODBC Driver 17 for SQL Server}'  # Usar 'SQL Server' si no tienes el driver 17
+    'driver': '{ODBC Driver 17 for SQL Server}'
 }
 
 # ====================================================================================
@@ -30,7 +30,6 @@ LOG_CONFIG = {
 # CONFIGURACIÓN DE EJECUCIÓN
 # ====================================================================================
 EXEC_CONFIG = {
-    'pause_seconds': 0.5,  # Pausa entre ejecuciones
-    'show_progress': True,  # Mostrar progreso en consola
-    'validate_functions': False  # Validar funciones antes de ejecutar
+    'pause_seconds': 0.5,     # Pausa entre ejecuciones para no saturar el servidor
+    'validate_functions': False
 }
