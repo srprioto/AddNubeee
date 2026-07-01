@@ -16,9 +16,8 @@ from colorama import Fore, Style
 from config import DB_CONFIG, LOG_CONFIG, EXEC_CONFIG
 from indicadores import INDICADORESSOLO, INDICADORESMULTIPLE, NOMBRE_TABLA
 
-# ====================================================================================
 # CONFIGURACIÓN DE LOGGING (Hacia archivo o consola de fondo)
-# ====================================================================================
+
 logging.basicConfig(
     level=getattr(logging, LOG_CONFIG['level']),
     format=LOG_CONFIG['format'],
@@ -26,9 +25,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ====================================================================================
+
 # CONTROL DE TECLADO MULTIPLATAFORMA (Windows / Linux / Mac)
-# ====================================================================================
+
 try:
     import msvcrt
     def get_key():
@@ -57,9 +56,9 @@ except ImportError:
     KEY_DOWN = '[B'
     KEY_ENTER = b'\n'
 
-# ====================================================================================
+
 # INTERFAZ DE CONSOLA (MENÚ INTERACTIVO)
-# ====================================================================================
+
 def seleccionar_modo() -> str:
     opciones = ["Solo", "Multiple"]
     seleccionado = 0
@@ -87,9 +86,9 @@ def seleccionar_modo() -> str:
             
     return opciones[seleccionado].lower()
 
-# ====================================================================================
+
 # CONEXIÓN A BASE DE DATOS
-# ====================================================================================
+
 def get_connection():
     try:
         conn_str = (
@@ -105,9 +104,9 @@ def get_connection():
         print(f"\n\033[1;31m- ERROR DE CONEXIÓN -\033[0m No se pudo conectar a SQL Server: {str(e)}")
         raise
 
-# ====================================================================================
+
 # PROCEDIMIENTOS DE EJECUCIÓN SQL
-# ====================================================================================
+
 def ejecutar_sp_solo(conn, nombre_columna: str, funcion_sql: str) -> Tuple[bool, str]:
     try:
         cursor = conn.cursor()
@@ -129,9 +128,9 @@ def ejecutar_sp_multiple(conn, mapeo_columnas: str, funcion_sql: str) -> Tuple[b
     except Exception as e:
         return False, str(e)
 
-# ====================================================================================
+
 # FLUJO PRINCIPAL
-# ====================================================================================
+
 def main():
     modo = seleccionar_modo()
     
@@ -198,9 +197,9 @@ def main():
         if conn:
             conn.close()
 
-    # ====================================================================================
+    
     # REPORTE FINAL EN CONSOLA
-    # ====================================================================================
+    
     print("\n" + "=" * 60)
     print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
     print("=" * 60)
