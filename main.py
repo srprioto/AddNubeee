@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Script principal con selector de modo interactivo y logs de consola detallados
-Autor: Sistema Automatizado
+Autor: Yo!
 Fecha: 2026
 """
-
-
 
 import pyodbc
 import time
@@ -17,7 +14,7 @@ from colorama import Fore, Style
 
 # Importar configuraciones y catálogos
 from config import DB_CONFIG, LOG_CONFIG, EXEC_CONFIG
-from indicadores import INDICADORESSOLO, INDICADORESMULTIPLE
+from indicadores import INDICADORESSOLO, INDICADORESMULTIPLE, NOMBRE_TABLA
 
 # ====================================================================================
 # CONFIGURACIÓN DE LOGGING (Hacia archivo o consola de fondo)
@@ -97,7 +94,7 @@ def get_connection():
     try:
         conn_str = (
             f"DRIVER={DB_CONFIG['driver']};"
-            f"SERVER={DB_CONFIG['server']},{DB_CONFIG['port']};"
+            f"SERVER={DB_CONFIG['server']};"
             f"DATABASE={DB_CONFIG['database']};"
             f"UID={DB_CONFIG['username']};"
             f"PWD={DB_CONFIG['password']};"
@@ -125,8 +122,8 @@ def ejecutar_sp_multiple(conn, mapeo_columnas: str, funcion_sql: str) -> Tuple[b
     try:
         cursor = conn.cursor()
         # pyodbc traduce strings de Python a NVARCHAR de forma automática y segura
-        sql = "EXEC dbo.SP_CargarFuncionAMatriz_Multi @MapeoColumnas = ?, @FuncionSQL = ?"
-        cursor.execute(sql, (mapeo_columnas, funcion_sql))
+        sql = "EXEC dbo.SP_CargarFuncionAMatriz_Multi @MapeoColumnas = ?, @FuncionSQL = ?, @NombreTabla = ?"
+        cursor.execute(sql, (mapeo_columnas, funcion_sql, NOMBRE_TABLA))
         cursor.commit()
         return True, "SUCCESS"
     except Exception as e:

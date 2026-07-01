@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Configuración de conexión a la base de datos y ejecución
-Autor: Sistema Automatizado
+Autor: Yo!
 Fecha: 2026
 """
+
+import os  # <-- ESTA LÍNEA FALTA
+from dotenv import load_dotenv
+
+# Carga las variables desde el archivo .env
+load_dotenv()
 
 # ====================================================================================
 # CONFIGURACIÓN DE CONEXIÓN A SQL SERVER
 # ====================================================================================
 DB_CONFIG = {
-    'server': 'localhost',
-    'port': 1433,
-    'database': 'nubeee',
-    'username': 'sa',
-    'password': 'Clave-Sql-2026',
-    'driver': '{ODBC Driver 17 for SQL Server}'
+    'server': os.environ.get('DB_SERVER'),
+    # 'port': int(os.environ.get('DB_PORT', 1433)),  # El puerto se convierte a número entero
+    'database': os.environ.get('DB_DATABASE'),
+    'username': os.environ.get('DB_USERNAME'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'driver': os.environ.get('DB_DRIVER')
 }
 
 # ====================================================================================
