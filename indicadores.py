@@ -4,7 +4,7 @@ Autor: Yo!
 Fecha: 2026
 """
 
-NOMBRE_TABLA = "FACT_DISC_SNAPSHOT_MULTIPLES"
+NOMBRE_TABLA = "FACT_DISC_SNAPSHOT_REHABFISIC_BL1"
 
 # ====================================================================================
 # CONSTANTE: INDICADORES SOLO (Para SP_CargarFuncionAMatriz)
@@ -24,172 +24,12 @@ INDICADORESSOLO = [
 
 INDICADORESMULTIPLE = [
     (
-        '"0d-11A":"NDQ119", "12A-17A":"NDQ120", "18A-29A":"NDQ121", "30A-59A":"NDQ122", "60A+":"NDQ123"', 
-        "dbo.Multiples_ConCert('fisico', 'sensorial', 'N,R');"
+        '"0d-11A":"NDQ689", "12A-17A":"NDQ690", "18A-29A":"NDQ691", "30A-59A":"NDQ692", "60A+":"NDQ693"',
+        "dbo.RehabFisica_ConCert('A178,A1782,A800,B690,B91X,B941,C720,C721,D334,G041,G042,G048,G049,G050,G051,G052,G058,G114,G320,G35X,G360,G373,G820,G821,G822,G823,G824,G825,G834,G950,G951,G952,G958,G959,G971,M471,M480,M500,Q050,Q051,Q052,Q053,Q054,Q055,Q056,Q057,Q058,Q059,Q060,Q061,Q062,Q063,Q064,Q068,Q069,S140,S141,S240,S241,S340,S341,T093,T889', 'N,R');"
     ),
     (
-        '"0d-11A":"NDQ124", "12A-17A":"NDQ125", "18A-29A":"NDQ126", "30A-59A":"NDQ127", "60A+":"NDQ128"', 
-        "dbo.Multiples_SinCert('fisico', 'sensorial', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ129", "12A-17A":"NDQ130", "18A-29A":"NDQ131", "30A-59A":"NDQ132", "60A+":"NDQ133"', 
-        "dbo.Multiples_EnRiesgo('fisico', 'sensorial', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ134", "12A-17A":"NDQ135", "18A-29A":"NDQ136", "30A-59A":"NDQ137", "60A+":"NDQ138"', 
-        "dbo.Multiples_ConCert('fisico', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ139", "12A-17A":"NDQ140", "18A-29A":"NDQ141", "30A-59A":"NDQ142", "60A+":"NDQ143"', 
-        "dbo.Multiples_SinCert('fisico', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ144", "12A-17A":"NDQ145", "18A-29A":"NDQ146", "30A-59A":"NDQ147", "60A+":"NDQ148"', 
-        "dbo.Multiples_EnRiesgo('fisico', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ149", "12A-17A":"NDQ150", "18A-29A":"NDQ151", "30A-59A":"NDQ152", "60A+":"NDQ153"', 
-        "dbo.Multiples_ConCert('sensorial', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ154", "12A-17A":"NDQ155", "18A-29A":"NDQ156", "30A-59A":"NDQ157", "60A+":"NDQ158"', 
-        "dbo.Multiples_SinCert('sensorial', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ159", "12A-17A":"NDQ160", "18A-29A":"NDQ161", "30A-59A":"NDQ162", "60A+":"NDQ163"', 
-        "dbo.Multiples_EnRiesgo('sensorial', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ164", "12A-17A":"NDQ165", "18A-29A":"NDQ166", "30A-59A":"NDQ167", "60A+":"NDQ168"', 
-        "dbo.Multiples_ConCert('sensorial', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ169", "12A-17A":"NDQ170", "18A-29A":"NDQ171", "30A-59A":"NDQ172", "60A+":"NDQ173"', 
-        "dbo.Multiples_SinCert('sensorial', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ174", "12A-17A":"NDQ175", "18A-29A":"NDQ176", "30A-59A":"NDQ177", "60A+":"NDQ178"', 
-        "dbo.Multiples_EnRiesgo('sensorial', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ179", "12A-17A":"NDQ180", "18A-29A":"NDQ181", "30A-59A":"NDQ182", "60A+":"NDQ183"', 
-        "dbo.Multiples_ConCert('fisico', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ184", "12A-17A":"NDQ185", "18A-29A":"NDQ186", "30A-59A":"NDQ187", "60A+":"NDQ188"', 
-        "dbo.Multiples_SinCert('fisico', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ189", "12A-17A":"NDQ190", "18A-29A":"NDQ191", "30A-59A":"NDQ192", "60A+":"NDQ193"', 
-        "dbo.Multiples_EnRiesgo('fisico', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ194", "12A-17A":"NDQ195", "18A-29A":"NDQ196", "30A-59A":"NDQ197", "60A+":"NDQ198"', 
-        "dbo.Multiples_ConCert('fisico', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ199", "12A-17A":"NDQ200", "18A-29A":"NDQ201", "30A-59A":"NDQ202", "60A+":"NDQ203"', 
-        "dbo.Multiples_SinCert('fisico', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ204", "12A-17A":"NDQ205", "18A-29A":"NDQ206", "30A-59A":"NDQ207", "60A+":"NDQ208"', 
-        "dbo.Multiples_EnRiesgo('fisico', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ209", "12A-17A":"NDQ210", "18A-29A":"NDQ211", "30A-59A":"NDQ212", "60A+":"NDQ213"', 
-        "dbo.Multiples_ConCert('mental', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ214", "12A-17A":"NDQ215", "18A-29A":"NDQ216", "30A-59A":"NDQ217", "60A+":"NDQ218"', 
-        "dbo.Multiples_SinCert('mental', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ219", "12A-17A":"NDQ220", "18A-29A":"NDQ221", "30A-59A":"NDQ222", "60A+":"NDQ223"', 
-        "dbo.Multiples_EnRiesgo('mental', 'fisico', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ224", "12A-17A":"NDQ225", "18A-29A":"NDQ226", "30A-59A":"NDQ227", "60A+":"NDQ228"', 
-        "dbo.Multiples_ConCert('mental', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ229", "12A-17A":"NDQ230", "18A-29A":"NDQ231", "30A-59A":"NDQ232", "60A+":"NDQ233"', 
-        "dbo.Multiples_SinCert('mental', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ234", "12A-17A":"NDQ235", "18A-29A":"NDQ236", "30A-59A":"NDQ237", "60A+":"NDQ238"', 
-        "dbo.Multiples_EnRiesgo('mental', 'fisico', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ239", "12A-17A":"NDQ240", "18A-29A":"NDQ241", "30A-59A":"NDQ242", "60A+":"NDQ243"', 
-        "dbo.Multiples_ConCert('sensorial', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ244", "12A-17A":"NDQ245", "18A-29A":"NDQ246", "30A-59A":"NDQ247", "60A+":"NDQ248"', 
-        "dbo.Multiples_SinCert('sensorial', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ249", "12A-17A":"NDQ250", "18A-29A":"NDQ251", "30A-59A":"NDQ252", "60A+":"NDQ253"', 
-        "dbo.Multiples_EnRiesgo('sensorial', 'mental', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ254", "12A-17A":"NDQ255", "18A-29A":"NDQ256", "30A-59A":"NDQ257", "60A+":"NDQ258"', 
-        "dbo.Multiples_ConCert('sensorial', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ259", "12A-17A":"NDQ260", "18A-29A":"NDQ261", "30A-59A":"NDQ262", "60A+":"NDQ263"', 
-        "dbo.Multiples_SinCert('sensorial', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ264", "12A-17A":"NDQ265", "18A-29A":"NDQ266", "30A-59A":"NDQ267", "60A+":"NDQ268"', 
-        "dbo.Multiples_EnRiesgo('sensorial', 'mental', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ269", "12A-17A":"NDQ270", "18A-29A":"NDQ271", "30A-59A":"NDQ272", "60A+":"NDQ273"', 
-        "dbo.Multiples_ConCert('mental', 'sensorial', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ274", "12A-17A":"NDQ275", "18A-29A":"NDQ276", "30A-59A":"NDQ277", "60A+":"NDQ278"', 
-        "dbo.Multiples_SinCert('mental', 'sensorial', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ279", "12A-17A":"NDQ280", "18A-29A":"NDQ281", "30A-59A":"NDQ282", "60A+":"NDQ283"', 
-        "dbo.Multiples_EnRiesgo('mental', 'sensorial', 'N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ284", "12A-17A":"NDQ285", "18A-29A":"NDQ286", "30A-59A":"NDQ287", "60A+":"NDQ288"', 
-        "dbo.Multiples_ConCert('mental', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ289", "12A-17A":"NDQ290", "18A-29A":"NDQ291", "30A-59A":"NDQ292", "60A+":"NDQ293"', 
-        "dbo.Multiples_SinCert('mental', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ294", "12A-17A":"NDQ295", "18A-29A":"NDQ296", "30A-59A":"NDQ297", "60A+":"NDQ298"', 
-        "dbo.Multiples_EnRiesgo('mental', 'sensorial', 'N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ299", "12A-17A":"NDQ300", "18A-29A":"NDQ301", "30A-59A":"NDQ302", "60A+":"NDQ303"', 
-        "dbo.Multiples_Triple_ConCert('N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ304", "12A-17A":"NDQ305", "18A-29A":"NDQ306", "30A-59A":"NDQ307", "60A+":"NDQ308"', 
-        "dbo.Multiples_Triple_SinCert('N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ309", "12A-17A":"NDQ310", "18A-29A":"NDQ311", "30A-59A":"NDQ312", "60A+":"NDQ313"', 
-        "dbo.Multiples_Triple_EnRiesgo('N,R');"
-    ),
-    (
-        '"0d-11A":"NDQ314", "12A-17A":"NDQ315", "18A-29A":"NDQ316", "30A-59A":"NDQ317", "60A+":"NDQ318"', 
-        "dbo.Multiples_Triple_ConCert('N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ319", "12A-17A":"NDQ320", "18A-29A":"NDQ321", "30A-59A":"NDQ322", "60A+":"NDQ323"', 
-        "dbo.Multiples_Triple_SinCert('N,C,R');"
-    ),
-    (
-        '"0d-11A":"NDQ324", "12A-17A":"NDQ325", "18A-29A":"NDQ326", "30A-59A":"NDQ327", "60A+":"NDQ328"', 
-        "dbo.Multiples_Triple_EnRiesgo('N,C,R');"
+        '"0d-11A":"NDQ1509", "12A-17A":"NDQ1510", "18A-29A":"NDQ1511", "30A-59A":"NDQ1512", "60A+":"NDQ1513"',
+        "dbo.RehabFisica_EnRiesgo('T200,T201,T202,T203,T204,T205,T206,T207,T208,T209,T200,T201,T202,T203,T204,T205,T206,T207,T210,T220,T230,T240,T250,T260,T270,T280,T290,T300,T310,T311,T312,T313,T314,T315,T316,T317,T318,T319,T310,T311,T312,T313,T314,T315,T316,T317,T318,T319,T320,T321,T322,T323,T324,T325,T326,T327,T328,T329,T320,T321,T322,T323,T324,T325,T326,T327,T328,T329,T330,T331,T332,T333,T334,T335,T336,T337,T338,T339,T330,T331,T332,T333,T334,T335,T336,T337,T338,T339,T340,T341,T342,T343,T344,T345,T346,T347,T348,T349,T340,T341,T342,T343,T344,T345,T346,T347,T348,T349,T350,T351,T352,T353,T354,T355,T356,T357,T358,T359,T350,T351,T352,T353,T354,T355,T356,T357', 'N,R');"
     ),
 ]
 
