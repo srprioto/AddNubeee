@@ -110,8 +110,8 @@ def get_connection():
 def ejecutar_sp_solo(conn, nombre_columna: str, funcion_sql: str) -> Tuple[bool, str]:
     try:
         cursor = conn.cursor()
-        sql = "EXEC dbo.SP_CargarFuncionAMatriz @NombreColumna = ?, @FuncionSQL = ?"
-        cursor.execute(sql, (nombre_columna, funcion_sql))
+        sql = "EXEC dbo.SP_CargarFuncionAMatriz @NombreColumna = ?, @FuncionSQL = ?, @NombreTabla = ?"
+        cursor.execute(sql, (nombre_columna, funcion_sql, NOMBRE_TABLA))
         cursor.commit()
         return True, "SUCCESS"
     except Exception as e:
