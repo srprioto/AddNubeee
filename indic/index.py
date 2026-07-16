@@ -69,7 +69,7 @@ for i in range(0, num_rows, 5):
 # ==========================================
 
 output_lines = []
-output_lines.append("INDICADORESMULTIPLE_2 = [")
+output_lines.append("INDICADORESMULTIPLE = [")
 
 for dict_str, func_name in blocks:
     output_lines.append("    (")
