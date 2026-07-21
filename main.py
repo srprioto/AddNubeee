@@ -16,6 +16,7 @@ from config import DB_CONFIG, LOG_CONFIG
 # Importar los módulos con la lógica de cada modo
 import solo
 import multiples
+import todo  # NUEVO
 
 # CONFIGURACIÓN DE LOGGING (Hacia archivo o consola de fondo)
 
@@ -61,7 +62,7 @@ except ImportError:
 # INTERFAZ DE CONSOLA (MENÚ INTERACTIVO)
 
 def seleccionar_modo() -> str:
-    opciones = ["Solo", "Multiple"]
+    opciones = ["Solo", "Multiple", "Todo"]  # NUEVO: agregamos "Todo"
     seleccionado = 0
 
     while True:
@@ -119,21 +120,48 @@ def main():
     try:
         if modo == "solo":
             exitosos, fallidos, total = solo.procesar_solo(conn)
-        else:
+            # Reporte para modo solo
+            print("\n" + "=" * 60)
+            print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
+            print("=" * 60)
+            print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
+            print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
+            print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
+            print("=" * 60 + "\n")
+            
+        elif modo == "multiple":
             exitosos, fallidos, total = multiples.procesar_multiple(conn)
+            # Reporte para modo multiple
+            print("\n" + "=" * 60)
+            print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
+            print("=" * 60)
+            print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
+            print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
+            print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
+            print("=" * 60 + "\n")
+            
+        else:  # modo "todo"
+            (total_tablas, total_exitosos_solo, total_fallidos_solo, 
+             total_exitosos_multiple, total_fallidos_multiple, total_procesados) = todo.procesar_todo(conn)
+            
+            # Reporte para modo todo
+            print("\n" + "=" * 60)
+            print("RESUMEN FINAL DE EJECUCIÓN - MODO TODO (MASIVO)")
+            print("=" * 60)
+            print(f"   Tablas Procesadas: {total_tablas}")
+            print(f"   Total Registros Procesados: {total_procesados}")
+            print("-" * 60)
+            print(f"   INDICADORES SOLO:")
+            print(f"     ** OK ** Exitosos: \033[1;32m{total_exitosos_solo}\033[0m")
+            print(f"     **ERROR* Fallidos:   \033[1;31m{total_fallidos_solo}\033[0m")
+            print(f"   INDICADORES MULTIPLE:")
+            print(f"     ** OK ** Exitosos: \033[1;32m{total_exitosos_multiple}\033[0m")
+            print(f"     **ERROR* Fallidos:   \033[1;31m{total_fallidos_multiple}\033[0m")
+            print("=" * 60 + "\n")
+            
     finally:
         if conn:
             conn.close()
-
-    # REPORTE FINAL EN CONSOLA
-
-    print("\n" + "=" * 60)
-    print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
-    print("=" * 60)
-    print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
-    print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
-    print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
-    print("=" * 60 + "\n")
 
 if __name__ == "__main__":
     main()
