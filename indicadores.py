@@ -5,13 +5,17 @@ Fecha: 2026
 """
 
 # CONSTANTES PARA MODO SOLO (Mantenidas por compatibilidad)
-NOMBRE_TABLA = "FACT_DISC_SNAPSHOT_MULTIPLES"
-
+NOMBRE_TABLA = "FACT_DISC_SNAPSHOT_NINOS"
 
 INDICADORESSOLO = [    
-    ('NDQ29', "dbo.Ninos_ConCert('P072,P073','N,R')"),
-    ('NDQ30', "dbo.Ninos_ConCert('P070','N,R')"),
+    
+    ('NDQ117', "dbo.Ninos_Riesgo('A400,A401,A402,A403,A408,A409,A410,A411,A412,A413,A414,A415,A418,A419','N,C,R')"),
+    ('NDQ118', "dbo.Ninos_Riesgo('G800,G800,G801,G802,G803,G804,G808,G809','N,C,R')")
+
 ]
+
+
+
 
 
 INDICADORESMULTIPLE = [
@@ -32,7 +36,7 @@ TODO = {
     "INDICADORESSOLO": {
         "FACT_DISC_SNAPSHOT_CAP_MED_REHAB": [
             ('NDQ1', "dbo.Capa_Med_Reh_1_N()"),
-            ('NDQ2', "dbo.Capa_Med_Reh_2_N('9945001', '2')"),
+            ('NDQ2', "dbo.Capa_Med_Reh_2_N('99450.01', '2')"),
             ('NDQ3', "dbo.Capa_Med_Reh_2_N('99201,99202,99203,99204,97762,97703', '3')"),
             ('NDQ4', "dbo.Capa_Med_Reh_2_N('97799', '4')"),
             ('NDQ5', "dbo.Capa_Med_Reh_1_S1234('1')"),
@@ -1956,8 +1960,6 @@ TODO = {
             ('NDQ5667', "dbo.Actores_Cap('APP168', 'C1042', '2')"),
 
         ]
-
-
 
 
 
@@ -4974,23 +4976,20 @@ TODO = {
 
         ],
 
-
-
         "FACT_DISC_SNAPSHOT_CERT_EESS": [
             (
                 '"0d-11A":"NDQ3839", "12A-17A":"NDQ3840", "18A-29A":"NDQ3841", "30A-59A":"NDQ3842", "60A+":"NDQ3843"',
-                "dbo.Certif_Eess('D,R', '1', '');"
+                "dbo.Certif_Eess_Eva();"
             ),
             (
                 '"0d-11A":"NDQ3844", "12A-17A":"NDQ3845", "18A-29A":"NDQ3846", "30A-59A":"NDQ3847", "60A+":"NDQ3848"',
-                "dbo.Certif_Eess('D', '2', '');"
+                "dbo.Certif_Eess_Cali();"
             ),
             (
                 '"0d-11A":"NDQ3849", "12A-17A":"NDQ3850", "18A-29A":"NDQ3851", "30A-59A":"NDQ3852", "60A+":"NDQ3853"',
-                "dbo.Certif_Eess('D', '3', 'LEV,MOD,SEV');"
+                "dbo.Certif_Eess_Cert();"
             ),
         ],
-
 
         "FACT_DISC_SNAPSHOT_COMUNID_FAMILIAR": [
             (

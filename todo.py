@@ -29,7 +29,8 @@ def ejecutar_crear_tabla(conn, nombre_tabla: str) -> Tuple[bool, str]:
 
 # PROCESAMIENTO DE DATOS SOLO PARA UNA TABLA ESPECÍFICA
 
-def procesar_solo_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tuple]) -> Tuple[int, int, int]:
+def procesar_solo_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tuple], 
+                             idx_tabla: int, total_tablas_solo: int) -> Tuple[int, int, int]:
     """Procesa indicadores SOLO para una tabla específica"""
     total = len(lista_indicadores)
     exitosos = 0
@@ -61,10 +62,10 @@ def procesar_solo_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tu
         
         if exito:
             exitosos += 1
-            print(f"\r    [{idx}/{total}] {info_visual} -> \033[1;32mSUCCESS\033[0m")
+            print(f"\r    [SOLO/{idx_tabla}/{total_tablas_solo}] [{idx}/{total}] {info_visual} -> \033[1;32mSUCCESS\033[0m")
         else:
             fallidos += 1
-            print(f"\r    [{idx}/{total}] {info_visual} -> \033[1;31mERROR\033[0m ({mensaje})")
+            print(f"\r    [SOLO/{idx_tabla}/{total_tablas_solo}] [{idx}/{total}] {info_visual} -> \033[1;31mERROR\033[0m ({mensaje})")
         
         if EXEC_CONFIG['pause_seconds'] > 0:
             time.sleep(EXEC_CONFIG['pause_seconds'])
@@ -74,7 +75,8 @@ def procesar_solo_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tu
 
 # PROCESAMIENTO DE DATOS MULTIPLE PARA UNA TABLA ESPECÍFICA
 
-def procesar_multiple_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tuple]) -> Tuple[int, int, int]:
+def procesar_multiple_para_tabla(conn, nombre_tabla: str, lista_indicadores: List[tuple],
+                                 idx_tabla: int, total_tablas_multiple: int) -> Tuple[int, int, int]:
     """Procesa indicadores MULTIPLE para una tabla específica"""
     total = len(lista_indicadores)
     exitosos = 0
@@ -108,10 +110,10 @@ def procesar_multiple_para_tabla(conn, nombre_tabla: str, lista_indicadores: Lis
         
         if exito:
             exitosos += 1
-            print(f"\r    [{idx}/{total}] {info_visual} -> \033[1;32mSUCCESS\033[0m")
+            print(f"\r    [MULTI/{idx_tabla}/{total_tablas_multiple}] [{idx}/{total}] {info_visual} -> \033[1;32mSUCCESS\033[0m")
         else:
             fallidos += 1
-            print(f"\r    [{idx}/{total}] {info_visual} -> \033[1;31mERROR\033[0m ({mensaje})")
+            print(f"\r    [MULTI/{idx_tabla}/{total_tablas_multiple}] [{idx}/{total}] {info_visual} -> \033[1;31mERROR\033[0m ({mensaje})")
         
         if EXEC_CONFIG['pause_seconds'] > 0:
             time.sleep(EXEC_CONFIG['pause_seconds'])
@@ -133,7 +135,13 @@ def procesar_todo(conn) -> Tuple[int, int, int, int, int, int]:
     print(" INICIANDO PROCESO EN MODO: TODO (MASIVO)")
     print("=" * 80)
     
-    total_tablas = 0
+    # Contar tablas por separado
+    total_tablas_solo = len(TODO.get("INDICADORESSOLO", {}))
+    total_tablas_multiple = len(TODO.get("INDICADORESMULTIPLE", {}))
+    total_tablas_general = total_tablas_solo + total_tablas_multiple
+    
+    idx_tabla_actual = 0
+    
     total_exitosos_solo = 0
     total_fallidos_solo = 0
     total_exitosos_multiple = 0
@@ -143,14 +151,16 @@ def procesar_todo(conn) -> Tuple[int, int, int, int, int, int]:
     try:
         # 1. PROCESAR INDICADORES SOLO
         print("\n" + "=" * 80)
-        print(" FASE 1: PROCESANDO INDICADORES SOLO")
+        print(f" FASE 1: PROCESANDO INDICADORES SOLO ({total_tablas_solo} tablas)")
         print("=" * 80)
         
         if "INDICADORESSOLO" in TODO:
+            idx_solo = 0
             for nombre_tabla, lista_indicadores in TODO["INDICADORESSOLO"].items():
-                total_tablas += 1
+                idx_solo += 1
+                idx_tabla_actual += 1
                 
-                print(f"\n\033[1;36m>>> TABLA: {nombre_tabla}\033[0m")
+                print(f"\n\033[1;36m>>> TABLA [{idx_tabla_actual}/{total_tablas_general}]: {nombre_tabla} [SOLO/{idx_solo}/{total_tablas_solo}]\033[0m")
                 print("-" * 60)
                 
                 # Crear/limpiar tabla
@@ -163,21 +173,25 @@ def procesar_todo(conn) -> Tuple[int, int, int, int, int, int]:
                     continue
                 
                 # Procesar indicadores SOLO
-                exitosos, fallidos, total = procesar_solo_para_tabla(conn, nombre_tabla, lista_indicadores)
+                exitosos, fallidos, total = procesar_solo_para_tabla(
+                    conn, nombre_tabla, lista_indicadores, idx_solo, total_tablas_solo
+                )
                 total_exitosos_solo += exitosos
                 total_fallidos_solo += fallidos
                 total_procesados += total
         
         # 2. PROCESAR INDICADORES MULTIPLE
         print("\n" + "=" * 80)
-        print(" FASE 2: PROCESANDO INDICADORES MULTIPLE")
+        print(f" FASE 2: PROCESANDO INDICADORES MULTIPLE ({total_tablas_multiple} tablas)")
         print("=" * 80)
         
         if "INDICADORESMULTIPLE" in TODO:
+            idx_multiple = 0
             for nombre_tabla, lista_indicadores in TODO["INDICADORESMULTIPLE"].items():
-                total_tablas += 1
+                idx_multiple += 1
+                idx_tabla_actual += 1
                 
-                print(f"\n\033[1;36m>>> TABLA: {nombre_tabla}\033[0m")
+                print(f"\n\033[1;36m>>> TABLA [{idx_tabla_actual}/{total_tablas_general}]: {nombre_tabla} [MULTI/{idx_multiple}/{total_tablas_multiple}]\033[0m")
                 print("-" * 60)
                 
                 # Crear/limpiar tabla
@@ -190,7 +204,9 @@ def procesar_todo(conn) -> Tuple[int, int, int, int, int, int]:
                     continue
                 
                 # Procesar indicadores MULTIPLE
-                exitosos, fallidos, total = procesar_multiple_para_tabla(conn, nombre_tabla, lista_indicadores)
+                exitosos, fallidos, total = procesar_multiple_para_tabla(
+                    conn, nombre_tabla, lista_indicadores, idx_multiple, total_tablas_multiple
+                )
                 total_exitosos_multiple += exitosos
                 total_fallidos_multiple += fallidos
                 total_procesados += total
@@ -198,5 +214,5 @@ def procesar_todo(conn) -> Tuple[int, int, int, int, int, int]:
     except KeyboardInterrupt:
         print("\n\n\033[1;33m!! Proceso interrumpido voluntariamente por el usuario.\033[0m")
     
-    return (total_tablas, total_exitosos_solo, total_fallidos_solo, 
+    return (total_tablas_general, total_exitosos_solo, total_fallidos_solo, 
             total_exitosos_multiple, total_fallidos_multiple, total_procesados)
