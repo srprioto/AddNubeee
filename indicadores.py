@@ -18,10 +18,19 @@ INDICADORESSOLO = [
 
 
 
+# INDICADORESMULTIPLE = [
+#     (
+#         '"0d-11A":"NDQ119", "12A-17A":"NDQ120", "18A-29A":"NDQ121", "30A-59A":"NDQ122", "60A+":"NDQ123"',
+#         "dbo.Multiples_ConCert('fisico', 'sensorial', 'N,R')"
+#     )    
+# ]
+
+
+
 INDICADORESMULTIPLE = [
     (
-        '"0d-11A":"NDQ119", "12A-17A":"NDQ120", "18A-29A":"NDQ121", "30A-59A":"NDQ122", "60A+":"NDQ123"',
-        "dbo.Multiples_ConCert('fisico', 'sensorial', 'N,R')"
+        '"0d-11A":"NDQ3839", "12A-17A":"NDQ3840", "18A-29A":"NDQ3841", "30A-59A":"NDQ3842", "60A+":"NDQ3843"',
+        "dbo.Certif_Eess_Eva()"
     ),
     (
         '"0d-11A":"NDQ124", "12A-17A":"NDQ125", "18A-29A":"NDQ126", "30A-59A":"NDQ127", "60A+":"NDQ128"',
