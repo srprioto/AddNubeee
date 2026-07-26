@@ -16,7 +16,8 @@ from config import DB_CONFIG, LOG_CONFIG
 # Importar los módulos con la lógica de cada modo
 import solo
 import multiples
-import todo  # NUEVO
+import todo
+from indicadores import TODO
 
 # CONFIGURACIÓN DE LOGGING (Hacia archivo o consola de fondo)
 
@@ -59,14 +60,14 @@ except ImportError:
     KEY_ENTER = b'\n'
 
 
-# INTERFAZ DE CONSOLA (MENÚ INTERACTIVO)
+# INTERFAZ DE CONSOLA (MENÚ PRINCIPAL)
 
 def seleccionar_modo() -> str:
-    opciones = ["Solo", "Multiple", "Todo"]  # NUEVO: agregamos "Todo"
+    opciones = ["Solo", "Multiple", "Todo"]
     seleccionado = 0
 
     while True:
-        print("\033[H\033[J", end="")  # Limpia la pantalla
+        print("\033[H\033[J", end="")
         print("==============================================")
         print("  SELECCIONE EL MODO DE EJECUCIÓN (Flechas)   ")
         print("==============================================")
@@ -87,6 +88,53 @@ def seleccionar_modo() -> str:
             break
 
     return opciones[seleccionado].lower()
+
+
+# SUBMENÚ PARA SELECCIONAR TABLA (DINÁMICO)
+
+def seleccionar_tabla(tipo: str) -> str:
+    """
+    Muestra submenú con las tablas disponibles para SOLO o MULTIPLE
+    tipo: 'solo' o 'multiple'
+    Retorna: nombre de la tabla seleccionada
+    """
+    # Obtener las tablas según el tipo
+    if tipo == "solo":
+        tablas = list(TODO.get("INDICADORESSOLO", {}).keys())
+        tipo_mostrar = "SOLO"
+    else:  # multiple
+        tablas = list(TODO.get("INDICADORESMULTIPLE", {}).keys())
+        tipo_mostrar = "MULTIPLE"
+    
+    if not tablas:
+        print(f"\n\033[1;31mNo hay tablas definidas para el modo {tipo_mostrar}\033[0m")
+        input("\nPresiona ENTER para volver al menú principal...")
+        return None
+    
+    seleccionado = 0
+    
+    while True:
+        print("\033[H\033[J", end="")
+        print("=" * 60)
+        print(f"  SELECCIONE TABLA - MODO {tipo_mostrar} (Flechas)   ")
+        print("=" * 60)
+        for i, tabla in enumerate(tablas):
+            if i == seleccionado:
+                print(f" > \033[1;32m[{tabla}]\033[0m <")
+            else:
+                print(f"   {tabla}")
+        print("=" * 60)
+        print("Usa las ↑/↓ y ENTER para confirmar.")
+
+        key = get_key()
+        if key == KEY_UP:
+            seleccionado = (seleccionado - 1) % len(tablas)
+        elif key == KEY_DOWN:
+            seleccionado = (seleccionado + 1) % len(tablas)
+        elif key == KEY_ENTER or key == b' ':
+            break
+    
+    return tablas[seleccionado]
 
 
 # CONEXIÓN A BASE DE DATOS
@@ -111,36 +159,58 @@ def get_connection():
 
 def main():
     modo = seleccionar_modo()
-
-    try:
-        conn = get_connection()
-    except Exception:
-        return
-
-    try:
-        if modo == "solo":
-            exitosos, fallidos, total = solo.procesar_solo(conn)
-            # Reporte para modo solo
-            print("\n" + "=" * 60)
-            print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
-            print("=" * 60)
-            print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
-            print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
-            print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
-            print("=" * 60 + "\n")
-            
-        elif modo == "multiple":
-            exitosos, fallidos, total = multiples.procesar_multiple(conn)
-            # Reporte para modo multiple
-            print("\n" + "=" * 60)
-            print(f"RESUMEN FINAL DE EJECUCIÓN - MODO {modo.upper()}")
-            print("=" * 60)
-            print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
-            print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
-            print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
-            print("=" * 60 + "\n")
-            
-        else:  # modo "todo"
+    
+    # Si el modo es Solo o Multiple, mostrar submenú de tablas
+    if modo in ["solo", "multiple"]:
+        nombre_tabla = seleccionar_tabla(modo)
+        if nombre_tabla is None:
+            return  # Volver al menú principal (en realidad termina el programa)
+        
+        try:
+            conn = get_connection()
+        except Exception:
+            return
+        
+        try:
+            if modo == "solo":
+                # Procesar SOLO para una tabla específica
+                exitosos, fallidos, total = solo.procesar_solo_tabla(conn, nombre_tabla)
+                
+                # Reporte para modo solo
+                print("\n" + "=" * 60)
+                print(f"RESUMEN FINAL DE EJECUCIÓN - MODO SOLO")
+                print(f"Tabla: {nombre_tabla}")
+                print("=" * 60)
+                print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
+                print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
+                print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
+                print("=" * 60 + "\n")
+                
+            else:  # multiple
+                # Procesar MULTIPLE para una tabla específica
+                exitosos, fallidos, total = multiples.procesar_multiple_tabla(conn, nombre_tabla)
+                
+                # Reporte para modo multiple
+                print("\n" + "=" * 60)
+                print(f"RESUMEN FINAL DE EJECUCIÓN - MODO MULTIPLE")
+                print(f"Tabla: {nombre_tabla}")
+                print("=" * 60)
+                print(f"   Registros Procesados: {exitosos + fallidos}/{total}")
+                print(f"   ** OK ** Exitosos (SUCCESS): \033[1;32m{exitosos}\033[0m")
+                print(f"   **ERROR* Fallidos  (ERROR):   \033[1;31m{fallidos}\033[0m")
+                print("=" * 60 + "\n")
+                
+        finally:
+            if conn:
+                conn.close()
+    
+    else:  # modo "todo"
+        try:
+            conn = get_connection()
+        except Exception:
+            return
+        
+        try:
             (total_tablas, total_exitosos_solo, total_fallidos_solo, 
              total_exitosos_multiple, total_fallidos_multiple, total_procesados) = todo.procesar_todo(conn)
             
@@ -159,9 +229,9 @@ def main():
             print(f"     **ERROR* Fallidos:   \033[1;31m{total_fallidos_multiple}\033[0m")
             print("=" * 60 + "\n")
             
-    finally:
-        if conn:
-            conn.close()
+        finally:
+            if conn:
+                conn.close()
 
 if __name__ == "__main__":
     main()
