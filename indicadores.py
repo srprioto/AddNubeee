@@ -172,22 +172,22 @@ TODO = {
 
         "FACT_DISC_SNAPSHOT_COMUNID_AGENTES": [
 
-            ('NDQ3853', "dbo.Capa_Agent_N('C0006', '1')"),
-            ('NDQ3854', "dbo.Capa_Agent_N('C0009,C3141', '1')"),
-            ('NDQ3855', "dbo.Capa_Agent_N('C0010', '1')"),
-            ('NDQ3856', "dbo.Capa_Agent_N('C3151', '1')"),
-            ('NDQ3857', "dbo.Capa_Agent_Cap('C0006', '1')"),
-            ('NDQ3858', "dbo.Capa_Agent_Cap('C0009,C3141', '1')"),
-            ('NDQ3859', "dbo.Capa_Agent_Cap('C0010', '1')"),
-            ('NDQ3860', "dbo.Capa_Agent_Cap('C3151', '1')"),
-            ('NDQ3861', "dbo.Capa_Agent_N('C0006', '2')"),
-            ('NDQ3862', "dbo.Capa_Agent_N('C0009,C3141', '2')"),
-            ('NDQ3863', "dbo.Capa_Agent_N('C0010', '2')"),
-            ('NDQ3864', "dbo.Capa_Agent_N('C3151', '2')"),
-            ('NDQ3865', "dbo.Capa_Agent_Cap('C0006', '2')"),
-            ('NDQ3866', "dbo.Capa_Agent_Cap('C0009,C3141', '2')"),
-            ('NDQ3867', "dbo.Capa_Agent_Cap('C0010', '2')"),
-            ('NDQ3868', "dbo.Capa_Agent_Cap('C3151', '2')")
+            ('NDQ3854', "dbo.Capa_Agent_N('C0006', '1')"),
+            ('NDQ3855', "dbo.Capa_Agent_N('C0009,C3141', '1')"),
+            ('NDQ3856', "dbo.Capa_Agent_N('C0010', '1')"),
+            ('NDQ3857', "dbo.Capa_Agent_N('C3151', '1')"),
+            ('NDQ3858', "dbo.Capa_Agent_Cap('C0006', '1')"),
+            ('NDQ3859', "dbo.Capa_Agent_Cap('C0009,C3141', '1')"),
+            ('NDQ3860', "dbo.Capa_Agent_Cap('C0010', '1')"),
+            ('NDQ3861', "dbo.Capa_Agent_Cap('C3151', '1')"),
+            ('NDQ3862', "dbo.Capa_Agent_N('C0006', '2')"),
+            ('NDQ3863', "dbo.Capa_Agent_N('C0009,C3141', '2')"),
+            ('NDQ3864', "dbo.Capa_Agent_N('C0010', '2')"),
+            ('NDQ3865', "dbo.Capa_Agent_N('C3151', '2')"),
+            ('NDQ3866', "dbo.Capa_Agent_Cap('C0006', '2')"),
+            ('NDQ3867', "dbo.Capa_Agent_Cap('C0009,C3141', '2')"),
+            ('NDQ3868', "dbo.Capa_Agent_Cap('C0010', '2')"),
+            ('NDQ3869', "dbo.Capa_Agent_Cap('C3151', '2')")
 
         ],
 
@@ -5003,27 +5003,27 @@ TODO = {
 
         "FACT_DISC_SNAPSHOT_COMUNID_FAMILIAR": [
             (
-                '"0d-11A":"NDQ3869", "12A-17A":"NDQ3870", "18A-29A":"NDQ3871", "30A-59A":"NDQ3872", "60A+":"NDQ3873"',
+                '"0d-11A":"NDQ3870", "12A-17A":"NDQ3871", "18A-29A":"NDQ3872", "30A-59A":"NDQ3873", "60A+":"NDQ3874"',
                 "dbo.Capa_Familia_ConCert('1')"
             ),
             (
-                '"0d-11A":"NDQ3874", "12A-17A":"NDQ3875", "18A-29A":"NDQ3876", "30A-59A":"NDQ3877", "60A+":"NDQ3878"',
+                '"0d-11A":"NDQ3875", "12A-17A":"NDQ3876", "18A-29A":"NDQ3877", "30A-59A":"NDQ3878", "60A+":"NDQ3879"',
                 "dbo.Capa_Familia_SinCert('1')"
             ),
             (
-                '"0d-11A":"NDQ3879", "12A-17A":"NDQ3880", "18A-29A":"NDQ3881", "30A-59A":"NDQ3882", "60A+":"NDQ3883"',
+                '"0d-11A":"NDQ3880", "12A-17A":"NDQ3881", "18A-29A":"NDQ3882", "30A-59A":"NDQ3883", "60A+":"NDQ3884"',
                 "dbo.Capa_Familia_ConCert('2')"
             ),
             (
-                '"0d-11A":"NDQ3884", "12A-17A":"NDQ3885", "18A-29A":"NDQ3886", "30A-59A":"NDQ3887", "60A+":"NDQ3888"',
+                '"0d-11A":"NDQ3885", "12A-17A":"NDQ3886", "18A-29A":"NDQ3887", "30A-59A":"NDQ3888", "60A+":"NDQ3889"',
                 "dbo.Capa_Familia_SinCert('2')"
             ),
             (
-                '"0d-11A":"NDQ3889", "12A-17A":"NDQ3890", "18A-29A":"NDQ3891", "30A-59A":"NDQ3892", "60A+":"NDQ3893"',
+                '"0d-11A":"NDQ3890", "12A-17A":"NDQ3891", "18A-29A":"NDQ3892", "30A-59A":"NDQ3893", "60A+":"NDQ3894"',
                 "dbo.Capa_Familia_ConCert('3')"
             ),
             (
-                '"0d-11A":"NDQ3894", "12A-17A":"NDQ3895", "18A-29A":"NDQ3896", "30A-59A":"NDQ3897", "60A+":"NDQ3898"',
+                '"0d-11A":"NDQ3895", "12A-17A":"NDQ3896", "18A-29A":"NDQ3897", "30A-59A":"NDQ3898", "60A+":"NDQ3899"',
                 "dbo.Capa_Familia_SinCert('3')"
             ),
         ]
